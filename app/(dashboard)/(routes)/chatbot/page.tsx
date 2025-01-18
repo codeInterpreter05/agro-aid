@@ -106,7 +106,7 @@ const ChatBotPage = () => {
             </div>
           )}
           {messages.length === 0 && !isLoading && (
-            <Empty label="Start conversation with Chatbot" />
+            <Empty label="Start conversation with Chatbot" src="/empty.png"/>
           )}
           <div className="flex flex-col-reverse gap-y-4">
             {messages.slice().reverse().map((message, index) => (
