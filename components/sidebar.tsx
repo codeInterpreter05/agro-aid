@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import { console } from "inspector"
-import { CodeIcon, ImageIcon, LayoutDashboard, MessageSquare, MusicIcon, Settings, VideoIcon } from "lucide-react"
+import { CodeIcon, ImageIcon, LayoutDashboard, MessageSquare, MusicIcon, Settings, VideoIcon, SproutIcon,  } from "lucide-react"
 import { Montserrat } from "next/font/google"
 import Image from "next/image"
 import Link from "next/link"
@@ -18,40 +18,30 @@ const routes = [
         color: "text-sky-500"
     },
     {
-        label: "Conversation",
+        label: "Chatbot",
         icon: MessageSquare,
         href: "/conversation",
         color: "text-violet-500"
     },
     {
-        label: "Image Generation",
+        label: "Crops",
         icon: ImageIcon,
         href: "/image",
         color: "text-pink-700"
     },
     {
-        label: "Video Generation",
+        label: "Analysis",
         icon: VideoIcon,
         href: "/video",
         color: "text-orange-700"
     },
     {
-        label: "Music Generation",
+        label: "Cattle",
         icon: MusicIcon,
         href: "/music",
         color: "text-emerald-500"
     },
-    {
-        label: "Code Generation",
-        icon: CodeIcon,
-        href: "/code",
-        color: "text-green-700"
-    },
-    {
-        label: "Settings",
-        icon: Settings,
-        href: "/settings",
-    },
+
 ]
 
 const Sidebar = () => {
@@ -64,8 +54,8 @@ const Sidebar = () => {
                 <div className="relative w-12 h-12 mr-2">
                     <Image fill alt="logo" src="/logo.png" />
                 </div>
-                <h1 className={cn("text-2xl font-bold", montserrat.className)}>
-                    CreaFive
+                <h1 className={cn("text-3xl font-bold", montserrat.className)}>
+                    AgroAid
                 </h1>
             </Link>
             <div className="space-y-1">
