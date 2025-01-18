@@ -3,7 +3,7 @@
 import axios from "axios";
 import * as z from "zod";
 import Heading from "@/components/heading";
-import { ArrowRight, MessageSquare } from "lucide-react";
+import { ArrowRight, Bot } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { formSchema } from "./constants";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,7 +39,7 @@ const ChatBotPage = () => {
   
       setMessages((current) => [...current, userMessage]);
   
-      const response = await axios.post("/api/conversation", {
+      const response = await axios.post("/api/chatbot", {
         messages: [userMessage],
       });
   
@@ -60,9 +60,9 @@ const ChatBotPage = () => {
   return (
     <div>
       <Heading
-        title="Conversation"
-        description="Our most advanced conversational model"
-        icon={MessageSquare}
+        title="Chatbot"
+        description="Our most advanced conversational agent"
+        icon={Bot}
         iconColor="text-violet-500"
         bgColor="bg-violet-500/10"
       />
@@ -81,7 +81,7 @@ const ChatBotPage = () => {
                       <Input
                         className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent sm:pl-2"
                         disabled={isLoading}
-                        placeholder="Ask something..."
+                        placeholder="Ask about your crops..."
                         autoComplete="off"
                         {...field}
                       />
@@ -106,7 +106,7 @@ const ChatBotPage = () => {
             </div>
           )}
           {messages.length === 0 && !isLoading && (
-            <Empty label="Start conversation with CreaFive" />
+            <Empty label="Start conversation with Chatbot" />
           )}
           <div className="flex flex-col-reverse gap-y-4">
             {messages.slice().reverse().map((message, index) => (
@@ -136,6 +136,4 @@ const ChatBotPage = () => {
 };
 
 export default ChatBotPage;
-
-
 
