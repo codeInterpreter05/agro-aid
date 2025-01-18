@@ -3,7 +3,7 @@
 import axios from "axios";
 import * as z from "zod";
 import Heading from "@/components/heading";
-import { ArrowRight, Bot } from "lucide-react";
+import { ArrowRight, Bot, Camera } from "lucide-react"; // Import Camera icon
 import { useForm } from "react-hook-form";
 import { formSchema } from "./constants";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,18 +36,18 @@ const ChatBotPage = () => {
         role: "user",
         content: values.prompt,
       };
-  
+
       setMessages((current) => [...current, userMessage]);
-  
+
       const response = await axios.post("/api/chatbot", {
         messages: [userMessage],
       });
-  
+
       setMessages((current) => [
         ...current,
         { role: "assistant", content: response.data.message },
       ]);
-  
+
       form.reset();
     } catch (error: any) {
       console.log(error);
@@ -55,7 +55,6 @@ const ChatBotPage = () => {
       router.refresh();
     }
   };
-  
 
   return (
     <div>
@@ -73,6 +72,7 @@ const ChatBotPage = () => {
               onSubmit={form.handleSubmit(onSubmitForm)}
               className="rounded-lg border w-full p-2 px-3 sm:px-5 md:px-3 shadow-md flex items-center gap-2"
             >
+              {/* Input field */}
               <FormField
                 name="prompt"
                 render={({ field }) => (
@@ -89,13 +89,26 @@ const ChatBotPage = () => {
                   </FormItem>
                 )}
               />
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="bg-black text-white flex justify-center items-center h-8 w-8 mt-1 sm:mt-0 sm:h-9 sm:w-9 p-2 rounded-full text-2xl cursor-pointer hover:bg-black/70"
-              >
-                <ArrowRight />
-              </button>
+              
+              {/* Container for the Camera icon and Right Arrow icon */}
+              <div className="flex items-center ml-auto gap-2">
+                {/* Camera Icon */}
+                <button
+                  type="button"
+                  className="bg-black text-white  p-2 rounded-full hover:bg-gray-200"
+                >
+                  <Camera size={20} />
+                </button>
+                
+                {/* Right Arrow Icon */}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="bg-black text-white flex justify-center items-center h-8 w-8 mt-1 sm:mt-0 sm:h-9 sm:w-9 p-2 rounded-full text-2xl cursor-pointer hover:bg-black/70"
+                >
+                  <ArrowRight />
+                </button>
+              </div>
             </form>
           </Form>
         </div>
@@ -106,7 +119,7 @@ const ChatBotPage = () => {
             </div>
           )}
           {messages.length === 0 && !isLoading && (
-            <Empty label="Start conversation with Chatbot" src="/empty.png"/>
+            <Empty label="Start conversation with Chatbot" src="/empty.png" />
           )}
           <div className="flex flex-col-reverse gap-y-4">
             {messages.slice().reverse().map((message, index) => (
@@ -124,7 +137,11 @@ const ChatBotPage = () => {
                     message.role === "user" ? "border border-black/10" : "bg-muted"
                   )}
                 >
-                  <p className="text-sm">{message.role === "user" ? message.content : message.content.slice(3, message.content.length - 3)}</p>
+                  <p className="text-sm">
+                    {message.role === "user"
+                      ? message.content
+                      : message.content.slice(3, message.content.length - 3)}
+                  </p>
                 </div>
               </div>
             ))}
@@ -136,4 +153,3 @@ const ChatBotPage = () => {
 };
 
 export default ChatBotPage;
-
