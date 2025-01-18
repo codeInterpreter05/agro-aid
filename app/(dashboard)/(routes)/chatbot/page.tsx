@@ -95,7 +95,7 @@ const ChatBotPage = () => {
                 {/* Camera Icon */}
                 <button
                   type="button"
-                  className="bg-black text-white  p-2 rounded-full hover:bg-gray-200"
+                  className="bg-black text-white flex justify-center items-center h-8 w-8 mt-1 sm:mt-0 sm:h-9 sm:w-9 p-2 rounded-full text-2xl cursor-pointer hover:bg-black/70"
                 >
                   <Camera size={20} />
                 </button>
