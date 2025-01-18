@@ -66,9 +66,10 @@ const CropsPage = () => {
           <div className="fixed bottom-6 right-6">
             <button
               onClick={() => setIsFormOpen(true)}
-              className="bg-green-500 text-white py-2 px-4 rounded-full hover:bg-green-600 shadow-lg"
+              className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 shadow-lg flex items-center space-x-2"
             >
-              <Plus size={24} />
+              <Plus size={24} /> {/* "+" icon */}
+              <span>Add Crop</span> {/* Added text "Add" */}
             </button>
           </div>
 
@@ -85,7 +86,7 @@ const CropsPage = () => {
                     <X />
                   </button>
                 </div>
-                <form className="flex flex-col gap-4">
+                <form className="flex flex-col gap-4 ">
                   <div>
                     <Input
                       name="name"
