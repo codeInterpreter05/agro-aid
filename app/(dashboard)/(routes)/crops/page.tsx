@@ -158,7 +158,7 @@ const CropsPage = () => {
               />
               <Input
                 placeholder="Selling price (per kg)"
-                type="text"
+                type="number"
                 value={newCrop.sellingPrice}
                 onChange={(e) =>
                   setNewCrop({

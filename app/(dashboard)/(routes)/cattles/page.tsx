@@ -83,7 +83,7 @@ const CattlesPage = () => {
               />
               <Input
                 placeholder="Enter the weight (kgs)"
-                type="string"
+                type="number"
                 value={newCattle.weight}
                 onChange={(e) => setNewCattle({ ...newCattle, weight: e.target.value })}
               />
