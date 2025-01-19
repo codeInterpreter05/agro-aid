@@ -1,23 +1,31 @@
-import z from "zod"
-import { zValidator } from "@hono/zod-validator"
-import { Hono } from 'hono'
-import { handle } from 'hono/vercel'
+import { Hono } from 'hono';
+import { cors } from 'hono/cors'; // Import the Hono CORS middleware
+import { handle } from 'hono/vercel';
+import { HTTPException } from 'hono/http-exception';
 
-import { HTTPException } from "hono/http-exception"
+import crops from './crops';
+import cattle from './cattle';
 
-import crops from './crops'
-import cattle from './cattle'
+export const runtime = 'edge';
 
-export const runtime = 'edge'
+const app = new Hono().basePath('/api');
 
-const app = new Hono().basePath('/api')
+// Add CORS middleware
+app.use(
+  '*', // Apply to all routes
+  cors({
+    origin: 'https://agro-aid-sage.vercel.app', // Frontend domain
+    allowMethods: ['GET', 'POST', 'DELETE', 'OPTIONS'], // Allowed methods
+    allowHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  })
+);
 
-const routes = app
-    .route("/crops", crops)
-    .route("/cattle", cattle)
+// Define routes
+app.route('/crops', crops).route('/cattle', cattle);
 
-export const GET = handle(app)
-export const POST = handle(app)
-export const DELETE = handle(app)
+// Export handlers for Vercel
+export const GET = handle(app);
+export const POST = handle(app);
+export const DELETE = handle(app);
 
-export type AppType = typeof routes;
+export type AppType = typeof app;
