@@ -24,7 +24,6 @@ interface Message {
   image?: string;
 }
 
-
 const ChatBotPage = () => {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -231,15 +230,14 @@ const ChatBotPage = () => {
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormControl className="m-0 p-0">
-                <Input
-                  className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent sm:pl-2"
-                  disabled={isLoading || isUploading}
-                  placeholder="Optional text message..."
-                  autoComplete="off"
-                  {...field}
-                  value={cropDetails}
-                />
-
+                    <Input
+                      className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent sm:pl-2"
+                      disabled={isLoading || isUploading}
+                      placeholder="Ask your queries..."
+                      autoComplete="off"
+                      {...field}
+                      value={form.getValues("prompt")}
+                    />
                   </FormControl>
                 </FormItem>
               )}
