@@ -55,7 +55,7 @@ const CattlePage = () => {
       {
         onSuccess: () => {
           refetch();
-          setNewCattle({ name: "", breed: "", gender: "", weight: "", feedingCycle: ""});
+          setNewCattle({ name: "", breed: "", gender: "", weight: "", feedingCycle: "" });
           setIsSheetOpen(false);
         },
         onError: (error) => console.error("Failed to create cattle:", error),
@@ -103,13 +103,19 @@ const CattlePage = () => {
                 value={newCattle.breed}
                 onChange={(e) => setNewCattle({ ...newCattle, breed: e.target.value })}
               />
-              <Input
-                placeholder="Gender"
+              {/* Gender Dropdown */}
+              <select
                 value={newCattle.gender}
                 onChange={(e) => setNewCattle({ ...newCattle, gender: e.target.value })}
-              />
+                className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-100"
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
               <Input
                 placeholder="Weight (kg)"
+                type="number"
                 value={newCattle.weight}
                 onChange={(e) => setNewCattle({ ...newCattle, weight: e.target.value })}
               />
@@ -139,18 +145,48 @@ const CattlePage = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {cattle.map((cattle) => (
-                <div key={cattle.id} className="bg-gray-100 p-6 rounded-lg shadow hover:shadow-lg">
-                  <h4 className="font-semibold text-lg">{cattle.name}</h4>
-                  <p>Breed: {cattle.breed}</p>
-                  <p>Gender: {cattle.gender}</p>
-                  <p>Weight: {cattle.weight} kg</p>
-                  <p>Feeding Cycle: {cattle.feedingCycle} kg per day</p>
-                  <button
-                    onClick={() => handleDeleteCattle(cattle.id)}
-                    className="mt-4 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
+                <div key={cattle.id} className="bg-white rounded-2xl shadow-lg p-6 transition-transform transform 
+                hover:scale-105 hover:shadow-2xl will-change-transform">
+                  <div className="flex items-center justify-between pb-3 border-b-2 border-gray-100">
+                    <h4 className="text-2xl font-semibold text-gray-800">
+                      {cattle.name.charAt(0).toUpperCase() + cattle.name.slice(1)}
+                    </h4>
+                    <span className="bg-blue-100 text-blue-600 text-xs px-3 py-1 rounded-sm uppercase font-semibold">
+                      {cattle.breed}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[1rem] text-gray-600 font-medium">Gender</span>
+                      <div className="px-4 py-1 text-blue-500 rounded-sm text-sm font-bold">{cattle.gender}</div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[1rem] text-gray-600 font-medium">Weight</span>
+                      <div className="px-4 py-1 text-yellow-500 rounded-sm text-sm font-bold">{cattle.weight} kg</div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[1rem] text-gray-600 font-medium">Feeding Cycle</span>
+                      <div className="px-4 py-1 text-green-500 rounded-sm text-sm font-bold">{cattle.feedingCycle} kg/day</div>
+                    </div>
+                  </div>
+
+                  <div className="w-full flex items-center justify-between">
+                    <button
+                      onClick={() => handleDeleteCattle(cattle.id)}
+                      disabled={deleteCattleMutation.isPending}
+                      className="mt-6 w-18 bg-red-500/90 text-white py-2 px-4 rounded-sm hover:bg-red-600 shadow-md transition"
+                    >
+                      <Trash className="w-4 h-4 inline mb-1" /> Delete
+                    </button>
+                    <button
+                      onClick={() => handleDeleteCattle(cattle.id)}
+                      disabled={deleteCattleMutation.isPending}
+                      className="mt-6 w-18 bg-sky-500/20 text-sky-500 py-2 px-4 rounded-sm hover:bg-blue-600/30 shadow-md transition"
+                    >
+                      <Cat className="w-6 h-6 inline mb-1" /> Diagnose
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -162,7 +198,3 @@ const CattlePage = () => {
 };
 
 export default CattlePage;
-
-
-
-
