@@ -17,6 +17,9 @@ import {
 import { useGetCattle } from "@/features/cattle/api/use-get-cattle";
 import { useCreateCattle } from "@/features/cattle/api/use-create-cattle";
 import { useDeleteCattle } from "@/features/cattle/api/use-delete-cattle";
+import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
+import { Select } from "@/components/ui/select"; // Ensure correct import based on your library
+import { useRouter } from "next/navigation";
 
 const CattlePage = () => {
   const [cattle, setCattle] = useState<any[]>([]);
@@ -32,6 +35,7 @@ const CattlePage = () => {
   const { data: fetchedCattle, refetch } = useGetCattle();
   const createCattleMutation = useCreateCattle();
   const deleteCattleMutation = useDeleteCattle();
+  const router = useRouter();
 
   useEffect(() => {
     if (fetchedCattle) setCattle(fetchedCattle);
@@ -70,6 +74,11 @@ const CattlePage = () => {
     });
   };
 
+  const genderOptions = [
+    { value: "Male", label: "Male" },
+    { value: "Female", label: "Female" },
+  ];
+
   return (
     <div>
       <Heading
@@ -107,11 +116,10 @@ const CattlePage = () => {
               <select
                 value={newCattle.gender}
                 onChange={(e) => setNewCattle({ ...newCattle, gender: e.target.value })}
-                className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-100"
+                className="border border-gray-300 p-2 pr-4 rounded-md hover:bg-gray-100"
               >
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
+                <option value="Male" className="p-4 hover:bg-gray-100">Male</option>
+                <option value="Female" className="p-4  hover:bg-gray-100">Female</option>
               </select>
               <Input
                 placeholder="Weight (kg)"
@@ -145,8 +153,11 @@ const CattlePage = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {cattle.map((cattle) => (
-                <div key={cattle.id} className="bg-white rounded-2xl shadow-lg p-6 transition-transform transform 
-                hover:scale-105 hover:shadow-2xl will-change-transform">
+                <div
+                  key={cattle.id}
+                  className="bg-white rounded-2xl shadow-lg p-6 transition-transform transform 
+                hover:scale-105 hover:shadow-2xl will-change-transform"
+                >
                   <div className="flex items-center justify-between pb-3 border-b-2 border-gray-100">
                     <h4 className="text-2xl font-semibold text-gray-800">
                       {cattle.name.charAt(0).toUpperCase() + cattle.name.slice(1)}
@@ -159,15 +170,21 @@ const CattlePage = () => {
                   <div className="mt-4 space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-[1rem] text-gray-600 font-medium">Gender</span>
-                      <div className="px-4 py-1 text-blue-500 rounded-sm text-sm font-bold">{cattle.gender}</div>
+                      <div className="px-4 py-1 text-blue-500 rounded-sm text-sm font-bold">
+                        {cattle.gender}
+                      </div>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-[1rem] text-gray-600 font-medium">Weight</span>
-                      <div className="px-4 py-1 text-yellow-500 rounded-sm text-sm font-bold">{cattle.weight} kg</div>
+                      <div className="px-4 py-1 text-yellow-500 rounded-sm text-sm font-bold">
+                        {cattle.weight} kg
+                      </div>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-[1rem] text-gray-600 font-medium">Feeding Cycle</span>
-                      <div className="px-4 py-1 text-green-500 rounded-sm text-sm font-bold">{cattle.feedingCycle} kg/day</div>
+                      <div className="px-4 py-1 text-green-500 rounded-sm text-sm font-bold">
+                        {cattle.feedingCycle} kg/day
+                      </div>
                     </div>
                   </div>
 
@@ -180,9 +197,10 @@ const CattlePage = () => {
                       <Trash className="w-4 h-4 inline mb-1" /> Delete
                     </button>
                     <button
-                      onClick={() => handleDeleteCattle(cattle.id)}
-                      disabled={deleteCattleMutation.isPending}
                       className="mt-6 w-18 bg-sky-500/20 text-sky-500 py-2 px-4 rounded-sm hover:bg-blue-600/30 shadow-md transition"
+                      onClick={() => {
+                        router.push("/chatbot"); 
+                      }}
                     >
                       <Cat className="w-6 h-6 inline mb-1" /> Diagnose
                     </button>
