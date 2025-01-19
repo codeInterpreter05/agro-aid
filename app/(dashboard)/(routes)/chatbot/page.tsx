@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import * as z from "zod";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,12 +21,16 @@ import { formSchema } from "./constants";
 interface Message {
   role: "user" | "assistant";
   content: string;
+  image?: string;
 }
 
 const ChatBotPage = () => {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,26 +43,48 @@ const ChatBotPage = () => {
 
   const onSubmitForm = async (values: z.infer<typeof formSchema>) => {
     try {
-      const userMessage: Message = {
-        role: "user",
-        content: values.prompt,
-      };
+      if (pendingImage) {
+        const userMessage: Message = {
+          role: "user",
+          content: values.prompt || "Image analysis request",
+          image: pendingImage,
+        };
 
-      setMessages((current) => [...current, userMessage]);
+        setMessages((current) => [...current, userMessage]);
 
-      const response = await axios.post("/api/chatbot", {
-        messages: [userMessage],
-      });
+        const response = await axios.post("/api/chatbot", {
+          messages: [userMessage],
+        });
 
-      setMessages((current) => [
-        ...current,
-        { role: "assistant", content: response.data.message },
-      ]);
+        setMessages((current) => [
+          ...current,
+          { role: "assistant", content: response.data.message },
+        ]);
+
+        // Clear the pending image after sending
+        setPendingImage(null);
+      } else if (values.prompt.trim()) {
+        // If there's only text, send it normally
+        const userMessage: Message = {
+          role: "user",
+          content: values.prompt,
+        };
+
+        setMessages((current) => [...current, userMessage]);
+
+        const response = await axios.post("/api/chatbot", {
+          messages: [userMessage],
+        });
+
+        setMessages((current) => [
+          ...current,
+          { role: "assistant", content: response.data.message },
+        ]);
+      }
 
       form.reset();
     } catch (error) {
       console.error("Error submitting form:", error);
-      // Add error handling UI feedback here
     }
   };
 
@@ -69,6 +95,14 @@ const ChatBotPage = () => {
     try {
       const base64 = await convertToBase64(file);
 
+      const userMessage: Message = {
+        role: "user",
+        content: "Image analysis request",
+        image: base64,
+      };
+
+      setMessages((current) => [...current, userMessage]);
+
       const response = await axios.post("/api/chatbot", {
         messages: [{ role: "user", content: "Image analysis request" }],
         b64: base64,
@@ -76,12 +110,10 @@ const ChatBotPage = () => {
 
       setMessages((current) => [
         ...current,
-        { role: "user", content: "Image uploaded" },
         { role: "assistant", content: response.data.message },
       ]);
     } catch (error) {
       console.error("Error uploading image:", error);
-      // Add error handling UI feedback here
     } finally {
       setIsUploading(false);
     }
@@ -96,8 +128,80 @@ const ChatBotPage = () => {
     });
   };
 
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+      });
+      streamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+
+      const modal = document.getElementById("camera-modal");
+      if (modal) modal.style.display = "flex";
+    } catch (error) {
+      console.error("Error accessing camera:", error);
+      alert(
+        "Unable to access camera. Please ensure you have given camera permissions."
+      );
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+
+    const modal = document.getElementById("camera-modal");
+    if (modal) modal.style.display = "none";
+  };
+
+  const capturePhoto = async () => {
+    try {
+      if (!videoRef.current) return;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      ctx.drawImage(videoRef.current, 0, 0);
+      const base64Image = canvas.toDataURL("image/jpeg");
+
+      stopCamera();
+
+      const userMessage: Message = {
+        role: "user",
+        content: "Photo analysis request",
+        image: base64Image,
+      };
+
+      setMessages((current) => [...current, userMessage]);
+
+      setIsUploading(true);
+      const response = await axios.post("/api/chatbot", {
+        messages: [{ role: "user", content: "Photo analysis request" }],
+        b64: base64Image,
+      });
+
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", content: response.data.message },
+      ]);
+    } catch (error) {
+      console.error("Error capturing photo:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
-    <div>
+    <div className="pb-11">
       <Heading
         title="Chatbot"
         description="Our most advanced conversational agent"
@@ -119,7 +223,7 @@ const ChatBotPage = () => {
                     <Input
                       className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent sm:pl-2"
                       disabled={isLoading || isUploading}
-                      placeholder="Ask about your crops..."
+                      placeholder="Optional text message..."
                       {...field}
                     />
                   </FormControl>
@@ -128,6 +232,15 @@ const ChatBotPage = () => {
             />
 
             <div className="flex items-center ml-auto gap-2">
+              <button
+                type="button"
+                onClick={startCamera}
+                disabled={isLoading || isUploading}
+                className="bg-black text-white flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/70 disabled:opacity-50"
+              >
+                <Camera size={20} />
+              </button>
+
               <input
                 id="image-upload"
                 type="file"
@@ -141,14 +254,6 @@ const ChatBotPage = () => {
 
               <button
                 type="button"
-                // disabled={isLoading || isUploading}
-                className="bg-black text-white flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/70 disabled:opacity-50"
-              >
-                <Camera size={20} />
-              </button>
-              
-              <button
-                type="button"
                 onClick={() => document.getElementById("image-upload")?.click()}
                 disabled={isLoading || isUploading}
                 className="bg-black text-white flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/70 disabled:opacity-50"
@@ -158,7 +263,7 @@ const ChatBotPage = () => {
 
               <button
                 type="submit"
-                disabled={isLoading || isUploading}
+                disabled={isLoading || isUploading || !form.getValues("prompt")}
                 className="bg-black text-white flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/70 disabled:opacity-50"
               >
                 <ArrowRight size={20} />
@@ -167,6 +272,38 @@ const ChatBotPage = () => {
           </form>
         </Form>
 
+        {/* Camera Modal */}
+        <div
+          id="camera-modal"
+          className="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+        >
+          <div className="bg-white p-4 rounded-lg shadow-lg max-w-xl w-full mx-4">
+            <div className="relative">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="w-full rounded-lg"
+              />
+              <div className="flex justify-center gap-4 mt-4">
+                <button
+                  onClick={capturePhoto}
+                  className="bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600"
+                >
+                  Capture
+                </button>
+                <button
+                  onClick={stopCamera}
+                  className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Messages Section */}
         <div className="space-y-4 mt-4">
           {(isLoading || isUploading) && (
             <div className="pt-5 w-full flex items-center justify-center">
@@ -178,7 +315,7 @@ const ChatBotPage = () => {
             <Empty label="Start conversation with Chatbot" src="/empty.png" />
           )}
 
-          <div className="flex flex-col-reverse gap-y-4">
+          <div className="flex flex-col gap-y-4">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -196,6 +333,15 @@ const ChatBotPage = () => {
                       : "bg-muted"
                   )}
                 >
+                  {message.image && (
+                    <div className="mb-3">
+                      <img
+                        src={message.image}
+                        alt="Uploaded content"
+                        className="max-w-full rounded-lg"
+                      />
+                    </div>
+                  )}
                   <p className="text-sm">{message.content}</p>
                 </div>
               </div>
