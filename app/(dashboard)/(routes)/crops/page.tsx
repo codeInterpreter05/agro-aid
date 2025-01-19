@@ -17,6 +17,7 @@ import {
 import { useCreateCrop } from "@/features/crops/api/use-create-crop";
 import { useDeleteCrop } from "@/features/crops/api/use-delete-crop";
 import { useGetCrop } from "@/features/crops/api/use-get-crops"; // Fetch crops from backend
+import { useRouter } from "next/navigation";
 
 const CropsPage = () => {
   const [crops, setCrops] = useState<any[]>([]); // Local state for crops
@@ -28,6 +29,8 @@ const CropsPage = () => {
     costPerKg: "",
     sellingPrice: "",
   });
+
+  const router = useRouter(); 
 
   const createCropMutation = useCreateCrop(); // Use the mutation hook
   const deleteCropMutation = useDeleteCrop(); // Use the mutation hook for deletion
@@ -227,12 +230,17 @@ const CropsPage = () => {
                       <Trash className="w-4 h-4 inline mb-1" /> Delete
                     </button>
                     <button
-                      onClick={() => handleDeleteCrop(crop.id)}
+                      onClick={() => {
+                        localStorage.setItem("selectedCrop", JSON.stringify(crop));
+                        console.log(localStorage.getItem("selectedCrop"));
+                        router.push("/chatbot"); 
+                      }}
                       disabled={deleteCropMutation.isPending}
                       className="mt-6 w-18 bg-sky-500/20 text-sky-500 py-2 px-4 rounded-sm hover:bg-blue-600/30 shadow-md transition"
                     >
                       <Bot className="w-6 h-6 inline mb-1" /> Diagnose
                     </button>
+
                   </div>
                 </div>
               ))}

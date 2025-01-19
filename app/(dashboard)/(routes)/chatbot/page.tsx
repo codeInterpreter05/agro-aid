@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import * as z from "zod";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,6 +33,7 @@ const ChatBotPage = () => {
   const [isListening, setIsListening] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const [cropDetails, setCropDetails] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -230,13 +231,15 @@ const ChatBotPage = () => {
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormControl className="m-0 p-0">
-                    <Input
-                      className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent sm:pl-2"
-                      disabled={isLoading || isUploading}
-                      placeholder="Optional text message..."
-                      autoComplete="off"
-                      {...field}
-                    />
+                <Input
+                  className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent sm:pl-2"
+                  disabled={isLoading || isUploading}
+                  placeholder="Optional text message..."
+                  autoComplete="off"
+                  {...field}
+                  value={cropDetails}
+                />
+
                   </FormControl>
                 </FormItem>
               )}

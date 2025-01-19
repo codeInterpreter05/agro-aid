@@ -1,5 +1,13 @@
-import { SignUp } from '@clerk/nextjs'
+import { SignUp } from '@clerk/nextjs';
 
 export default function Page() {
-  return <SignUp className='max-h-[9-vh]' />
+  return (
+    <SignUp
+      appearance={{
+        elements: {
+          rootBox: 'max-h-9vh', // Add custom styling for the root box
+        },
+      }}
+    />
+  );
 }
