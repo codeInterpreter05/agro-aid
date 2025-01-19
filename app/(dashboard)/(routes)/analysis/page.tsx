@@ -100,7 +100,7 @@ const ImagePage = () => {
         <div className="space-y-4 mt-2 py-4">
           {isLoading && (
             <div className="pt-5 rounded-lg w-full flex items-center justify-center">
-              <Loader label="Loading visuals" />
+              <Loader label="Loading visuals" src = "logo.png"/>
             </div>
           )}
 
