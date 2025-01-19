@@ -4,6 +4,8 @@ import "./globals.css";
 import {
   ClerkProvider,
 } from '@clerk/nextjs'
+import { Toaster } from "sonner";
+import { QueryProvider } from "@/providers/query-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +25,14 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/logo.png" type="image/x-icon" />
       </head>
         <html lang="en" className="custom-scrollbar">
-          <body className={inter.className}>{children}</body>
+          <body className={inter.className}>
+          <QueryProvider>
+              <Toaster />
+              
+              {children}
+              
+            </QueryProvider>
+          </body>
       </html>
     </ClerkProvider>
   );
