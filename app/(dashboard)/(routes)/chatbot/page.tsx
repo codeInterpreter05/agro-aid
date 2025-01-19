@@ -6,7 +6,7 @@ import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Bot, Camera, Upload } from "lucide-react";
+import { ArrowRight, Bot, Camera, Upload, Mic, MicOff } from "lucide-react";
 
 import Heading from "@/components/heading";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
@@ -24,11 +24,13 @@ interface Message {
   image?: string;
 }
 
+
 const ChatBotPage = () => {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [pendingImage, setPendingImage] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -215,6 +217,14 @@ const ChatBotPage = () => {
             onSubmit={form.handleSubmit(onSubmitForm)}
             className="rounded-lg border w-full p-2 px-3 sm:px-5 md:px-3 shadow-md flex items-center gap-2"
           >
+            <button
+              type="button"
+              disabled={isLoading || isUploading}
+              className="bg-gray-100 text-black flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/10 disabled:opacity-50"
+            >
+              {isListening ? <Mic size={20} /> : <MicOff size={20} />}
+            </button>
+
             <FormField
               name="prompt"
               render={({ field }) => (
@@ -236,7 +246,7 @@ const ChatBotPage = () => {
                 type="button"
                 onClick={startCamera}
                 disabled={isLoading || isUploading}
-                className="bg-black text-white flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/70 disabled:opacity-50"
+                className="bg-gray-100 text-black  flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/10 disabled:opacity-50"
               >
                 <Camera size={20} />
               </button>
@@ -256,7 +266,7 @@ const ChatBotPage = () => {
                 type="button"
                 onClick={() => document.getElementById("image-upload")?.click()}
                 disabled={isLoading || isUploading}
-                className="bg-black text-white flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/70 disabled:opacity-50"
+                className="bg-gray-100 text-black  flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/10 disabled:opacity-50"
               >
                 <Upload size={20} />
               </button>
@@ -264,7 +274,7 @@ const ChatBotPage = () => {
               <button
                 type="submit"
                 disabled={isLoading || isUploading || !form.getValues("prompt")}
-                className="bg-black text-white flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/70 disabled:opacity-50"
+                className="bg-black text-white flex justify-center items-center h-8 w-8 sm:h-9 sm:w-9 p-2 rounded-full hover:bg-black/70"
               >
                 <ArrowRight size={20} />
               </button>
