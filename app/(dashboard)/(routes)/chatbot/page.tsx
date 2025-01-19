@@ -234,6 +234,7 @@ const ChatBotPage = () => {
                       className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent sm:pl-2"
                       disabled={isLoading || isUploading}
                       placeholder="Optional text message..."
+                      autoComplete="off"
                       {...field}
                     />
                   </FormControl>

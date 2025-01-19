@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash, Sprout } from "lucide-react";
+import { Plus, Trash, Sprout, Bot } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Heading from "@/components/heading";
 import { Empty } from "@/components/empty";
@@ -104,7 +104,7 @@ const CropsPage = () => {
         {/* Add Crop Button with Sheet */}
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
-            <button className="bg-green-500 text-white py-2 px-3 pr-4 rounded-full hover:bg-green-600 shadow-lg flex items-center gap-2 fixed bottom-6 right-6">
+            <button className="bg-green-500 text-white py-2 px-3 pr-4 rounded-sm hover:bg-green-600 shadow-lg flex items-center gap-2 fixed z-10 bottom-6 right-6">
               <Plus size={20} />
               <span>New Crop</span>
             </button>
@@ -169,7 +169,7 @@ const CropsPage = () => {
               <button
                 onClick={handleAddCrop}
                 disabled={createCropMutation.isPending}
-                className="w-full bg-green-500 text-white py-2 px-4 rounded-full hover:bg-green-600 shadow-lg mt-6"
+                className="w-full bg-green-500 text-white py-1 px-4 rounded-sm hover:bg-green-600 shadow-lg mt-6"
               >
                 {createCropMutation.isPending ? "Saving..." : "Save Crop"}
               </button>
@@ -188,40 +188,52 @@ const CropsPage = () => {
               {crops.map((crop) => (
                 <div
                   key={crop.id}
-                  className="bg-white rounded-2xl shadow-lg p-6 transition-transform transform hover:scale-105 hover:shadow-2xl will-change-transform"
+                  className="bg-white rounded-2xl shadow-lg p-6 transition-transform transform 
+                  hover:scale-105 hover:shadow-2xl will-change-transform"
                 >
                   {/* Header Section */}
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-2xl font-semibold text-gray-800">{crop.name}</h4>
-                    <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full uppercase font-semibold">
+                  <div className="flex items-center justify-between pb-3 border-b-2 border-gray-100">
+                  <h4 className="text-2xl font-semibold text-gray-800">
+                      {crop.name.charAt(0).toUpperCase() + crop.name.slice(1)}
+                    </h4>
+                    <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-sm uppercase font-semibold">
                       {crop.season}
                     </span>
                   </div>
 
                   {/* Details Section */}
-                  <div className="mt-4 space-y-3">
+                  <div className="mt-4 space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600 font-medium">Quantity</span>
-                      <div className="px-4 py-2 text-white bg-blue-500 rounded-full text-sm">{crop.quantity} kgs</div>
+                      <span className="text-[1rem] text-gray-600 font-medium">Quantity</span>
+                      <div className="px-4 py-1 text-blue-500 rounded-sm text-sm font-bold">{crop.quantity} kg</div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600 font-medium">Cost per kg</span>
-                      <div className="px-4 py-2 text-white bg-yellow-500 rounded-full text-sm">₹{crop.costPerKg}</div>
+                      <span className="text-[1rem] text-gray-600 font-medium">Cost Price</span>
+                      <div className="px-4 py-1 text-yellow-500 rounded-sm text-sm font-bold">₹{crop.costPerKg} per kg</div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600 font-medium">Selling Price</span>
-                      <div className="px-4 py-2 text-white bg-green-500 rounded-full text-sm">₹{crop.sellingPrice}</div>
+                      <span className="text-[1rem] text-gray-600 font-medium">Selling Price</span>
+                      <div className="px-4 py-1 text-green-500 rounded-sm text-sm font-bold">₹{crop.sellingPrice} per kg</div>
                     </div>
                   </div>
 
                   {/* Delete Button */}
-                  <button
-                    onClick={() => handleDeleteCrop(crop.id)}
-                    disabled={deleteCropMutation.isPending}
-                    className="mt-6 w-18 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 shadow-md transition"
-                  >
-                    <Trash className="w-4 h-4 inline" /> Delete
-                  </button>
+                  <div className="w-full flex items-center justify-between">
+                    <button
+                      onClick={() => handleDeleteCrop(crop.id)}
+                      disabled={deleteCropMutation.isPending}
+                      className="mt-6 w-18 bg-red-500/90 text-white py-2 px-4 rounded-sm hover:bg-red-600 shadow-md transition"
+                    >
+                      <Trash className="w-4 h-4 inline mb-1" /> Delete
+                    </button>
+                    <button
+                      onClick={() => handleDeleteCrop(crop.id)}
+                      disabled={deleteCropMutation.isPending}
+                      className="mt-6 w-18 bg-sky-500/20 text-sky-500 py-2 px-4 rounded-sm hover:bg-blue-600/30 shadow-md transition"
+                    >
+                      <Bot className="w-6 h-6 inline mb-1" /> Diagnose
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
