@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 
 const tools = [
   {
-    label: "ChatBot",
+    label: "Chatbot",
     icon: Bot,
     href: "/chatbot",
     color: "text-violet-500",
