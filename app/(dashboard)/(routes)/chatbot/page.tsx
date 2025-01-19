@@ -319,7 +319,7 @@ const ChatBotPage = () => {
         <div className="space-y-4 mt-4">
           {(isLoading || isUploading) && (
             <div className="pt-5 w-full flex items-center justify-center">
-              <Loader />
+              <Loader label = "Agrobot is thinking"/>
             </div>
           )}
 
